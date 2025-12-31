@@ -1,0 +1,46 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  name      String
+  // Événements créés par l'utilisateur
+  myEvents  Event[]  @relation("CreatedBy")
+  // Événements auxquels l'utilisateur participe
+  participations Registration[]
+}
+
+model Event {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String
+  date        DateTime
+  location    String
+  
+  // Relation avec le créateur
+  organizerId Int
+  organizer   User     @relation("CreatedBy", fields: [organizerId], references: [id])
+  
+  // Liste des inscrits
+  participants Registration[]
+}
+
+model Registration {
+  id      Int   @id @default(autoincrement())
+  userId  Int
+  eventId Int
+  user    User  @relation(fields: [userId], references: [id])
+  event   Event @relation(fields: [eventId], references: [id])
+
+  @@unique([userId, eventId]) // Un utilisateur ne peut s'inscrire qu'une fois
+}

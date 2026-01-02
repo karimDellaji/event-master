@@ -6,9 +6,14 @@ const { PrismaClient } = require('@prisma/client');
 
 const prisma = new PrismaClient();
 const app = express();
-const SECRET_KEY = "ma_super_cle_secrete_123";
+const SECRET_KEY = process.env.JWT_SECRET || 'MyHyperSecureProject2025!@#EventMaster';
 
-app.use(cors());
+app.use(cors(
+  {
+    origin: '*', // Ou ton URL Netlify
+    allowedHeaders: ['Content-Type', 'Authorization']
+  }
+));
 app.use(express.json());
 
 // --- MIDDLEWARE DE SÉCURITÉ ---
